@@ -1,0 +1,64 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
+use Auth;
+
+class BukuController extends Controller
+{
+    public function read(){
+        $buku = DB::table('buku')->orderBy('id_buku','DESC')->get();
+        return view('admin.buku.index',['buku'=>$buku]);
+    }
+
+    public function add(){
+        $buku= DB::table('buku')->orderBy('id_buku','DESC')->get();
+    	return view('admin.buku.tambah',['buku'=>$buku]);
+    }
+
+    public function create(Request $request){
+        DB::table('buku')->insert([  
+            'id_buku' => $request->id_buku,
+            'nama' => $request->nama,
+            'penerbit' => $request->penerbit,
+            'pengarang' => $request->pengarang,
+            'tahun_terbit' => $request->tahun_terbit,
+            'stock' => $request->stock   
+         ]);
+        return redirect('/admin/buku')->with("success","Data Berhasil Ditambah !");
+    }
+
+    public function detail($id){
+        $buku= DB::table('buku')->where('id_buku',$id)->first();
+        return view('admin.buku.detail',['buku'=>$buku]);
+    }
+
+    public function edit($id){
+        $buku= DB::table('buku')->where('id_buku',$id)->first();
+        return view('admin.buku.edit',['buku'=>$buku]);
+    }
+
+    public function update(Request $request, $id) {
+        DB::table('buku')   
+            ->where('id_buku', $id)
+            ->update([
+            'nama' => $request->nama,
+            'penerbit' => $request->penerbit,
+            'pengarang' => $request->pengarang,
+            'tahun_terbit' => $request->tahun_terbit,
+            'stock' => $request->stock    ]);
+
+        return redirect('/admin/buku')->with("success","Data Berhasil Diupdate !");
+    }
+
+    public function delete($id)
+    {
+        $buku= DB::table('buku')->where('id_buku',$id)->first();
+        DB::table('buku')->where('id_buku',$id)->delete();
+
+        return redirect('/admin/buku')->with("success","Data Berhasil Didelete !");
+    }
+}
